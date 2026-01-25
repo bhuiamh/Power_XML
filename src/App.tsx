@@ -247,7 +247,7 @@ function App() {
               Femto Device XML Comparator
             </h1>
             <p className="mt-1 text-sm text-slate-600">
-              Professional XML comparison and editing tool for RAN Engineers. Optimized for large XMLs (14k+ parameters).
+              Professional XML comparison and editing tool for RAN Engineers. Optimized for Femto devices.
             </p>
           </div>
 
@@ -271,7 +271,7 @@ function App() {
                 {isComparing ? 'Comparing…' : 'Compare'}
               </button>
 
-              <div className="flex flex-wrap items-center gap-2">
+              {/* <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={() =>
@@ -341,7 +341,7 @@ function App() {
                 >
                   {valueView === 'valueOnly' ? 'Value-only view' : 'Both values'}
                 </button>
-              </div>
+              </div> */}
 
               <input
                 value={filter}
@@ -458,7 +458,83 @@ function App() {
                 <span className="font-mono">@attr</span>), and text nodes (<span className="font-mono">#text</span>).
               </p>
             </div>
+<div>
 
+<div>
+<div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setChangeFilter({
+                      added: true,
+                      removed: false,
+                      changed: false
+                    })
+                  }
+                  className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${
+                    isAddedOnly
+                      ? 'border-cyan-300 bg-cyan-100 text-cyan-900'
+                      : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                  }`}
+                  title="Show only Added"
+                >
+                  Added only
+                </button>
+
+                <div className="flex items-center gap-1 rounded-full border border-slate-200 bg-white p-1">
+                  {(['added', 'removed', 'changed'] as const).map((k) => {
+                    const on = changeFilter[k];
+                    const colors =
+                      k === 'added'
+                        ? on
+                          ? 'bg-cyan-100 text-cyan-900'
+                          : 'text-slate-600 hover:bg-slate-50'
+                        : k === 'removed'
+                          ? on
+                            ? 'bg-rose-100 text-rose-900'
+                            : 'text-slate-600 hover:bg-slate-50'
+                          : on
+                            ? 'bg-amber-100 text-amber-900'
+                            : 'text-slate-600 hover:bg-slate-50';
+                    return (
+                      <button
+                        key={k}
+                        type="button"
+                        onClick={() =>
+                          setChangeFilter((prev) => {
+                            const next = { ...prev, [k]: !prev[k] };
+                            // Prevent "none selected" (keep at least one on)
+                            if (!next.added && !next.removed && !next.changed) {
+                              return prev;
+                            }
+                            return next;
+                          })
+                        }
+                        className={`rounded-full px-3 py-1 text-xs font-semibold transition ${colors}`}
+                        aria-pressed={on}
+                      >
+                        {k}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setValueView((v) => (v === 'both' ? 'valueOnly' : 'both'))}
+                  className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${
+                    valueView === 'valueOnly'
+                      ? 'border-primary-300 bg-primary-100 text-primary-900'
+                      : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                  }`}
+                  title="When enabled, hides irrelevant columns (e.g. Added-only shows only the added value)."
+                >
+                  {valueView === 'valueOnly' ? 'Value-only view' : 'Both values'}
+                </button>
+              </div>
+
+
+</div>
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-full border border-cyan-200 bg-cyan-50 px-3 py-1 text-sm font-semibold text-cyan-800">
                 Added: {stats.added}
@@ -473,7 +549,7 @@ function App() {
                 Showing: {filteredDiffs.length}
               </span>
 
-              {filteredDiffs.length > 0 && (
+              {/* {filteredDiffs.length > 0 && (
                 <>
                   <div className="h-6 w-px bg-slate-300" />
                   <button
@@ -497,7 +573,8 @@ function App() {
                     Export Excel
                   </button>
                 </>
-              )}
+              )} */}
+            </div>
             </div>
           </div>
 
@@ -574,6 +651,36 @@ function App() {
               </div>
             )}
           </div>
+         <div>
+         {filteredDiffs.length > 0 && (
+                <div className='flex items-center justify-between gap-3 pt-4'>
+
+                  <h1 className='text-base font-semibold text-slate-900'>Export Report</h1>
+                <div className='flex items-center gap-2'>
+                  <button
+                    onClick={handleExportCSV}
+                    className="inline-flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-1.5 text-sm font-semibold text-green-700 hover:bg-green-100"
+                    title="Export to CSV (Google Sheets compatible)"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Export CSV
+                  </button>
+                  <button
+                    onClick={handleExportExcel}
+                    className="inline-flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-1.5 text-sm font-semibold text-green-700 hover:bg-green-100"
+                    title="Export to Excel"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Export Excel
+                  </button>
+                </div>
+                </div>
+              )} 
+         </div>
         </section>
 
         <footer className="mt-8 border-t border-slate-200 pt-6 pb-4 text-center text-xs text-slate-500">
